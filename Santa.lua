@@ -30,12 +30,31 @@ function Santa.new()
 
     self.timeAccumulator = 0
     self.swapInterval = 2
+    self.speed = 200
 
-    function Santa:setSwapInterval(self, interval)
+    function Santa:setSwapInterval(interval)
         self.swapInterval = interval or 2
     end
 
     return self
+end
+
+function Santa:setState(state)
+    if self.images[state] then
+        self.state = state
+    end
+end
+
+function Santa:moveSanta(dt)
+    if love.keyboard.isDown("left") then
+        self.state = "left"
+        self.x = self.x - self.speed * dt
+    elseif love.keyboard.isDown("right") then
+        self.state = "right"
+        self.x = self.x + self.speed * dt
+    else 
+        self.state = "straight"
+    end
 end
 
 function Santa:update(dt)
@@ -44,11 +63,13 @@ function Santa:update(dt)
         self.timeAccumulator = self.timeAccumulator - self.swapInterval
         self.imageIndex = (self.imageIndex % 2) + 1
     end
+
+    self:moveSanta(dt)
 end
 
 function Santa:draw()
     local image = self.images[self.state][self.imageIndex]
-    love.graphics.draw(image, self.x - self.imageWidth / 2, self.y - self.imageHeight / 2, 0, 1.5, 1.5)
+    love.graphics.draw(image, self.x - self.imageWidth / 2, self.y - self.imageHeight / 2, 0, 2, 2)
 end
 
 return Santa
