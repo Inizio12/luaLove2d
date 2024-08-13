@@ -29,7 +29,7 @@ function Santa.new()
     self.imageIndex = 1
 
     self.timeAccumulator = 0
-    self.swapInterval = 2
+    self.swapInterval = 0.5
     self.speed = 200
 
     function Santa:setSwapInterval(interval)
@@ -46,10 +46,10 @@ function Santa:setState(state)
 end
 
 function Santa:moveSanta(dt)
-    if love.keyboard.isDown("left") then
+    if love.keyboard.isDown("left") and self.x > 20 then
         self.state = "left"
         self.x = self.x - self.speed * dt
-    elseif love.keyboard.isDown("right") then
+    elseif love.keyboard.isDown("right") and self.x < love.graphics.getWidth() - 50 then
         self.state = "right"
         self.x = self.x + self.speed * dt
     else 
