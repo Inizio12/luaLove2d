@@ -12,10 +12,7 @@ function Obstacle.new()
     self.x = math.random(20, windowWidth - 50)
     self.y = math.random(windowHeight - 30, windowHeight + 400)
 
-    self.images = {
-        love.graphics.newImage("Images/tree.png"),
-        love.graphics.newImage("Images/snowman.png")
-    }
+    self.images = Obstacle.images
 
     self.imageIndex = math.random(1,2)
     self.imageWidth = self.images[1]:getWidth()
@@ -44,4 +41,9 @@ function Obstacle:draw()
     love.graphics.draw(image, self.x - self.imageWidth / 2, self.y - self.imageHeight / 2, 0, 1.5, 1.5)
 end
 
+
+Obstacle.images = {
+    love.graphics.newImage("Images/tree.png"),
+    love.graphics.newImage("Images/snowman.png")
+}
 return Obstacle

@@ -11,7 +11,25 @@ function love.load()
     love.graphics.setBackgroundColor(225 / 255, 245 / 255, 244 / 255)
 
     santa = Santa.new()
-    for i = 1, 5 do
+    Santa.images = {
+        straight = {
+            love.graphics.newImage("Images/santa1.png"),
+            love.graphics.newImage("Images/santa2.png")
+        },
+        left = {
+            love.graphics.newImage("Images/santa-left1.png"),
+            love.graphics.newImage("Images/santa-left2.png")
+        },
+        right = {
+            love.graphics.newImage("Images/santa-right1.png"),
+            love.graphics.newImage("Images/santa-right2.png")
+        }
+    }
+    Obstacle.images = {
+        love.graphics.newImage("Images/tree.png"),
+        love.graphics.newImage("Images/snowman.png")
+    }
+    for i = 1, 10 do
         table.insert(obstacles, Obstacle.new())
     end
 end

@@ -8,20 +8,8 @@ function Santa.new()
 
     self.x = love.graphics.getWidth() / 2
     self.y = love.graphics.getHeight() / 4
-    self.images = {
-        straight = {
-            love.graphics.newImage("Images/santa1.png"),
-            love.graphics.newImage("Images/santa2.png")
-        },
-        left = {
-            love.graphics.newImage("Images/santa-left1.png"),
-            love.graphics.newImage("Images/santa-left2.png")
-        },
-        right = {
-            love.graphics.newImage("Images/santa-right1.png"),
-            love.graphics.newImage("Images/santa-right2.png")
-        }
-    }
+    self.images = Santa.images
+        
     self.imageWidth = self.images.straight[1]:getWidth()
     self.imageHeight = self.images.straight[1]:getHeight()
 
@@ -71,5 +59,21 @@ function Santa:draw()
     local image = self.images[self.state][self.imageIndex]
     love.graphics.draw(image, self.x - self.imageWidth / 2, self.y - self.imageHeight / 2, 0, 2, 2)
 end
+
+
+Santa.images = {
+    straight = {
+        love.graphics.newImage("Images/santa1.png"),
+        love.graphics.newImage("Images/santa2.png")
+    },
+    left = {
+        love.graphics.newImage("Images/santa-left1.png"),
+        love.graphics.newImage("Images/santa-left2.png")
+    },
+    right = {
+        love.graphics.newImage("Images/santa-right1.png"),
+        love.graphics.newImage("Images/santa-right2.png")
+    }
+}
 
 return Santa
