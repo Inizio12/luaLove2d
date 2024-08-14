@@ -9,14 +9,17 @@ local windowHeight = love.graphics.getHeight()
 function Obstacle.new()
     local self = setmetatable({}, Obstacle)
     
-    self.x = math.random(20, windowWidth - 50)
-    self.y = math.random(windowHeight - 30, windowHeight + 400)
+    self.imageWidth = self.images[1]:getWidth()
+    self.imageHeight = self.images[1]:getHeight()
+    self.imageScale = 1.5
+    self.scaledImageWidth = self.imageWidth * self.imageScale
+    self.scaledImageHeight = self.imageHeight * self.imageScale
+    self.x = math.random(20, windowWidth - 50) - self.scaledImageWidth / 2
+    self.y = math.random(windowHeight - 30, windowHeight + 400) + self.scaledImageHeight / 2
 
     self.images = Obstacle.images
 
     self.imageIndex = math.random(1,2)
-    self.imageWidth = self.images[1]:getWidth()
-    self.imageHeight = self.images[1]:getHeight()
 
     self.speed = 100
 
@@ -36,14 +39,20 @@ function Obstacle:setObstacleSpeed(speed)
     self.speed = speed or 100
 end
 
-function Obstacle:checkTouched(santa)
-    
-
+function Obstacle:getBoundingBox()
+    return self.x + 20, self.y + 20, self.scaledImageWidth - 40, self.scaledImageHeight - 40
 end
+
+function Obstacle:checkTouched(santa)
+    local santaX, santaY, santaWidth, santaHeight = santa:getBoundingBox()
+    local myX, myY, myW, myH = self:getBoundingBox()
+    return myX < santaX + santaWidth and myY < santaY + santaHeight and santaX < myX + myW and santaY < myY + myH
+end
+
 
 function Obstacle:draw()
     local image = self.images[self.imageIndex]
-    love.graphics.draw(image, self.x - self.imageWidth / 2, self.y - self.imageHeight / 2, 0, 1.5, 1.5)
+    love.graphics.draw(image, self.x, self.y, 0, self.imageScale, self.imageScale)
 end
 
 

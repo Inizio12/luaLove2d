@@ -86,12 +86,19 @@ function love.update(dt)
         for _, obstacle in ipairs(obstacles) do
             obstacle:update(dt)
         end
+        for i = 1, #obstacles do
+            if obstacles[i]:checkTouched(santa) then
+               changeGameState("ended")
+            end
+        end
     end
 end
 
 function love.draw()
-    santa:draw()
-    for _, obstacle in ipairs(obstacles) do
-        obstacle:draw()
+    if true then
+        santa:draw()
+        for _, obstacle in ipairs(obstacles) do
+            obstacle:draw()
+        end
     end
 end

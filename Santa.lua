@@ -5,17 +5,19 @@ Santa.__index = Santa
 
 function Santa.new()
     local self = setmetatable({}, Santa)
-
-    self.x = love.graphics.getWidth() / 2
-    self.y = love.graphics.getHeight() / 4
-    self.images = Santa.images
-        
+    
+    self.imageScale = 2
     self.imageWidth = self.images.straight[1]:getWidth()
     self.imageHeight = self.images.straight[1]:getHeight()
+    self.scaledImageWidth = self.imageWidth * 2
+    self.scaledImageHeight = self.imageHeight * 2
+    self.x = love.graphics.getWidth() / 2 - self.scaledImageWidth / 2
+    self.y = love.graphics.getHeight() / 4 - self.scaledImageHeight / 2
+    self.images = Santa.images
+        
 
     self.state = "straight"
     self.imageIndex = 1
-
     self.timeAccumulator = 0
     self.swapInterval = 0.5
     self.speed = 200
@@ -31,6 +33,10 @@ function Santa:setState(state)
     if self.images[state] then
         self.state = state
     end
+end
+
+function Santa:getBoundingBox()
+    return self.x + 20, self.y + 20, self.scaledImageWidth - 40, self.scaledImageHeight - 40
 end
 
 function Santa:moveSanta(dt)
@@ -57,7 +63,7 @@ end
 
 function Santa:draw()
     local image = self.images[self.state][self.imageIndex]
-    love.graphics.draw(image, self.x - self.imageWidth / 2, self.y - self.imageHeight / 2, 0, 2, 2)
+    love.graphics.draw(image, self.x, self.y, 0, self.imageScale, self.imageScale)
 end
 
 
