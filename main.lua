@@ -70,6 +70,9 @@ function love.load()
         right = {
             love.graphics.newImage("Images/santa-right1.png"),
             love.graphics.newImage("Images/santa-right2.png")
+        },
+        dead = {
+            love.graphics.newImage("Images/santa-fall.png")
         }
     }
     Obstacle.images = {
@@ -81,14 +84,16 @@ function love.load()
 end
 
 function love.update(dt)
+    santa:update(dt)
     if game.state["running"] then
-        santa:update(dt)
+        santa:moveSanta(dt)
         for _, obstacle in ipairs(obstacles) do
             obstacle:update(dt)
         end
         for i = 1, #obstacles do
             if obstacles[i]:checkTouched(santa) then
-               changeGameState("ended")
+                santa:setState("dead")
+                changeGameState("ended")
             end
         end
     end

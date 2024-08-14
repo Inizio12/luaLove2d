@@ -53,16 +53,18 @@ end
 
 function Santa:update(dt)
     self.timeAccumulator = self.timeAccumulator + dt
+    if self.state == "dead" then
+        self.image = self.images[self.state][1]
+    end
     if self.timeAccumulator >= self.swapInterval then
         self.timeAccumulator = self.timeAccumulator - self.swapInterval
         self.imageIndex = (self.imageIndex % 2) + 1
     end
 
-    self:moveSanta(dt)
 end
 
 function Santa:draw()
-    local image = self.images[self.state][self.imageIndex]
+    local image = self.images[self.state][self.imageIndex] or self.images[self.state][1]
     love.graphics.draw(image, self.x, self.y, 0, self.imageScale, self.imageScale)
 end
 
@@ -79,6 +81,9 @@ Santa.images = {
     right = {
         love.graphics.newImage("Images/santa-right1.png"),
         love.graphics.newImage("Images/santa-right2.png")
+    },
+    dead = {
+        love.graphics.newImage("Images/santa-fall.png")
     }
 }
 
