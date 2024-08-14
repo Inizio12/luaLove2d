@@ -36,6 +36,11 @@ function Obstacle:setObstacleSpeed(speed)
     self.speed = speed or 100
 end
 
+function Obstacle:checkTouched(santa)
+    
+
+end
+
 function Obstacle:draw()
     local image = self.images[self.imageIndex]
     love.graphics.draw(image, self.x - self.imageWidth / 2, self.y - self.imageHeight / 2, 0, 1.5, 1.5)

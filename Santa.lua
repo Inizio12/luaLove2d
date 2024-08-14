@@ -20,11 +20,11 @@ function Santa.new()
     self.swapInterval = 0.5
     self.speed = 200
 
-    function Santa:setSwapInterval(interval)
-        self.swapInterval = interval or 2
-    end
-
     return self
+end
+
+function Santa:setSwapInterval(interval)
+    self.swapInterval = interval or 2
 end
 
 function Santa:setState(state)

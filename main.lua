@@ -2,15 +2,62 @@ local love = require "love"
 local Santa = require "Santa"
 local Obstacle = require "Obstacle"
 
-local santa
+local santa = Santa.new()
 local obstacles = {}
+
+local game = {
+    difficulty = 10,
+    state = {
+        menu = true,
+        paused = false,
+        running = false,
+        ended = false
+    },
+    points = 0,
+    levels = {}
+}
+
+local fonts = {
+    medium = {
+        font = love.graphics.newFont(16),
+        size = 16
+    },
+    large = {
+        font = love.graphics.newFont(24),
+        size = 24
+    },
+    massive = {
+        font = love.graphics.newFont(60),
+        size = 60
+    }
+}
+
+local function changeGameState(state)
+    game.state["menu"] = state == "menu"
+    game.state["paused"] = state == "paused"
+    game.state["running"] = state == "running"
+    game.state["ended"] = state == "ended"
+end
+
+local function startNewGame()
+    changeGameState("running")
+    obstacles = {}
+    santa = Santa.new()
+    santa:setSwapInterval(1)
+
+    for i = 1, game.difficulty do
+        table.insert(obstacles, Obstacle.new())
+    end
+
+    game.points = 0
+
+end
 
 function love.load()
     math.randomseed(os.time())
     love.mouse.setVisible(false)
     love.graphics.setBackgroundColor(225 / 255, 245 / 255, 244 / 255)
 
-    santa = Santa.new()
     Santa.images = {
         straight = {
             love.graphics.newImage("Images/santa1.png"),
@@ -29,15 +76,16 @@ function love.load()
         love.graphics.newImage("Images/tree.png"),
         love.graphics.newImage("Images/snowman.png")
     }
-    for i = 1, 10 do
-        table.insert(obstacles, Obstacle.new())
-    end
+
+    startNewGame()
 end
 
 function love.update(dt)
-    santa:update(dt)
-    for _, obstacle in ipairs(obstacles) do
-        obstacle:update(dt)
+    if game.state["running"] then
+        santa:update(dt)
+        for _, obstacle in ipairs(obstacles) do
+            obstacle:update(dt)
+        end
     end
 end
 
