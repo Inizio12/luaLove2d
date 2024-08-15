@@ -19,14 +19,16 @@ function Santa.new()
     self.state = "straight"
     self.imageIndex = 1
     self.timeAccumulator = 0
-    self.swapInterval = 0.5
+    self.swapInterval = 1
     self.speed = 200
 
     return self
 end
 
-function Santa:setSwapInterval(interval)
-    self.swapInterval = interval or 2
+function Santa:setSwapInterval()
+    if (self.swapInterval > 0.1) then
+        self.swapInterval = self.swapInterval - 0.2
+    end
 end
 
 function Santa:setState(state)

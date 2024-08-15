@@ -57,9 +57,9 @@ function love.load()
 end
 
 function love.update(dt)
-    game.santa:update(dt)
-    if game.state["running"] then
+    if game.state.running then
         game:update(dt)
+        game.santa:update(dt)
         game.santa:moveSanta(dt)
         for _, obstacle in ipairs(game.obstacles) do
             obstacle:update(dt)
@@ -68,12 +68,23 @@ function love.update(dt)
             if game.obstacles[i]:checkTouched(game.santa) then
                 game.santa:setState("dead")
                 game:changeGameState("ended")
-                endGameScoreText:setContent("YOUR SCORE: " .. math.floor(game.points))
                 if game.points > game.highScore then
                     game.highScore = math.floor(game.points)
                     highScoreText:setContent("High Score: " .. game.highScore)
                     game:saveHighScore()
+                    endGameScoreText:setContent("HIGH SCORE!: " .. math.floor(game.points))
+                else
+                    endGameScoreText:setContent("YOUR SCORE: " .. math.floor(game.points))
                 end
+            end
+            if (math.floor(game.points) % 20 == 0 and #game.obstacles < 30) then
+                table.insert(game.obstacles, Obstacle.new())
+                game.points = game.points + 1
+                game.santa:setSwapInterval()
+                for j = 1, #game.obstacles do
+                    game.obstacles[j]:setObstacleSpeed()
+                end
+                game.points = game.points + 1
             end
         end
         scoreText:setContent("Score: " .. math.floor(game.points))
@@ -91,6 +102,7 @@ function love.draw()
             obstacle:draw()
         end
         scoreText:draw()
+        highScoreText:draw()
     end
     if game.state.menu then
         startButton:draw()
@@ -98,15 +110,16 @@ function love.draw()
     elseif game.state.ended then
         retryButton:draw()
         quitButton:draw()
+        endGameScoreText:draw()
     end
 end
 
 function love.mousepressed(x, y, button, istouch, presses)
     if button == 1 then
-        if game.state["menu"] then
+        if game.state.menu then
             startButton:update(x, y, true)
             quitButton:update(x, y, true)
-        elseif game.state["ended"] then
+        elseif game.state.ended then
             retryButton:update(x, y, true)
             quitButton:update(x, y, true)
         end

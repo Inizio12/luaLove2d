@@ -27,7 +27,7 @@ function Obstacle.new()
 end
 
 function Obstacle:update(dt)
-    if (self.y > 20) then 
+    if (self.y > 20) then
         self.y = self.y - self.speed * dt
     else
         self.x = math.random(20, windowWidth - 50)
@@ -35,8 +35,8 @@ function Obstacle:update(dt)
     end
 end
 
-function Obstacle:setObstacleSpeed(speed)
-    self.speed = speed or 100
+function Obstacle:setObstacleSpeed()
+    self.speed = self.speed + 20
 end
 
 function Obstacle:getBoundingBox()

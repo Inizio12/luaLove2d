@@ -16,7 +16,7 @@ function Game.new()
         running = false,
         ended = false
     }
-    self.points = 0
+    self.points = 1
     self.levels = {}
     self.highScore = self:loadHighScore()
     
@@ -27,13 +27,13 @@ function Game:startNewGame()
     self:changeGameState("running")
     self.obstacles = {}
     self.santa = Santa.new()
-    self.santa:setSwapInterval(1)
+    self.santa:setSwapInterval()
 
     for i = 1, self.difficulty do
         table.insert(self.obstacles, Obstacle.new())
     end
 
-    self.points = 0
+    self.points = 1
 end
 
 function Game:changeGameState(state)
