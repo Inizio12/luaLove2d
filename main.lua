@@ -79,7 +79,6 @@ function love.update(dt)
             end
             if (math.floor(game.points) % 20 == 0 and #game.obstacles < 30) then
                 table.insert(game.obstacles, Obstacle.new())
-                game.points = game.points + 1
                 game.santa:setSwapInterval()
                 for j = 1, #game.obstacles do
                     game.obstacles[j]:setObstacleSpeed()
