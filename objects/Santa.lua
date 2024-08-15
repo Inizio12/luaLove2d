@@ -12,7 +12,7 @@ function Santa.new()
     self.scaledImageWidth = self.imageWidth * 2
     self.scaledImageHeight = self.imageHeight * 2
     self.x = love.graphics.getWidth() / 2 - self.scaledImageWidth / 2
-    self.y = love.graphics.getHeight() / 4 - self.scaledImageHeight / 2
+    self.y = love.graphics.getHeight() / 4 - self.scaledImageHeight / 8
     self.images = Santa.images
         
 

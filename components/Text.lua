@@ -34,10 +34,12 @@ end
 
 function Text:draw()
     local prevColor = {love.graphics.getColor()}
+    local prevFont = love.graphics.getFont()
     love.graphics.setFont(self.font)
     love.graphics.setColor(self.color)
     love.graphics.print(self.content, self.x, self.y)
     love.graphics.setColor(prevColor)
+    love.graphics.setFont(prevFont)
 end
 
 return Text

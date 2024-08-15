@@ -12,19 +12,22 @@ local windowWidth, windowHeight = 800, 600
 local buttonWidth, buttonHeight = 200, 50
 local buttonYStart = windowHeight / 2 - buttonHeight / 2
 
-local startButton = Button.new("Start Game", (windowWidth - buttonWidth) / 2, buttonYStart, buttonWidth, buttonHeight, function()
-    game:startNewGame() -- Transition to the running state
-end)
 
-local retryButton = Button.new("Retry", (windowWidth - buttonWidth) / 2, buttonYStart, buttonWidth, buttonHeight, function()
-    game:startNewGame() -- Restart the game
-end)
+local startButton = Button.new("Start Game", (windowWidth - buttonWidth) / 2, buttonYStart, buttonWidth, buttonHeight, function()
+    game:startNewGame()
+end, font)
+
+local retryButton = Button.new("Replay Game", (windowWidth - buttonWidth) / 2, buttonYStart, buttonWidth, buttonHeight, function()
+    game:startNewGame()
+end, font)
 
 local quitButton = Button.new("Quit Game", (windowWidth - buttonWidth) / 2, buttonYStart + buttonHeight + 10, buttonWidth, buttonHeight, function()
     love.event.quit()
-end)
+end, font)
 
 local scoreText = Text.new("Score: 0", 10, 10, font, {0, 0, 1})
+local highScoreText = Text.new("High Score: " .. game.highScore, 10, 40, font, {0, 0, 1})
+local endGameScoreText = Text.new("", (windowWidth - buttonWidth) / 2, buttonYStart - 60, font, {0, 0, 1})
 
 function love.load()
     math.randomseed(os.time())
@@ -54,8 +57,9 @@ function love.load()
 end
 
 function love.update(dt)
-    game:update(dt)
+    game.santa:update(dt)
     if game.state["running"] then
+        game:update(dt)
         game.santa:moveSanta(dt)
         for _, obstacle in ipairs(game.obstacles) do
             obstacle:update(dt)
@@ -64,6 +68,12 @@ function love.update(dt)
             if game.obstacles[i]:checkTouched(game.santa) then
                 game.santa:setState("dead")
                 game:changeGameState("ended")
+                endGameScoreText:setContent("YOUR SCORE: " .. math.floor(game.points))
+                if game.points > game.highScore then
+                    game.highScore = math.floor(game.points)
+                    highScoreText:setContent("High Score: " .. game.highScore)
+                    game:saveHighScore()
+                end
             end
         end
         scoreText:setContent("Score: " .. math.floor(game.points))
@@ -72,33 +82,41 @@ end
 
 function love.draw()
     game.santa:draw()
+    if game.state.paused then
+        local pausedText = Text.new("PAUSED", love.graphics.getWidth() / 2 - 50, love.graphics.getHeight() / 2 - 20, font, {1, 0, 0})
+        pausedText:draw()
+    end
     if not game.state.menu then
         for _, obstacle in ipairs(game.obstacles) do
             obstacle:draw()
         end
         scoreText:draw()
     end
-
     if game.state.menu then
         startButton:draw()
         quitButton:draw()
     elseif game.state.ended then
         retryButton:draw()
         quitButton:draw()
-    elseif game.state.paused then
-        local pausedText = Text.new("PAUSED", love.graphics.getWidth() / 2 - 50, love.graphics.getHeight() / 2 - 20, font, {1, 0, 0})
-        pausedText:draw()
     end
 end
 
 function love.mousepressed(x, y, button, istouch, presses)
     if button == 1 then
-        if game.state.menu then
+        if game.state["menu"] then
             startButton:update(x, y, true)
             quitButton:update(x, y, true)
-        elseif game.state.ended then
+        elseif game.state["ended"] then
             retryButton:update(x, y, true)
             quitButton:update(x, y, true)
+        end
+    end
+end
+
+function love.keypressed(key)
+    if not game.state.menu and not game.state.ended then
+        if key == "escape" then
+            game:togglePause()
         end
     end
 end
