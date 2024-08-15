@@ -1,61 +1,33 @@
 local love = require "love"
-local Santa = require "Santa"
-local Obstacle = require "Obstacle"
+local Santa = require "objects.Santa"
+local Obstacle = require "objects.Obstacle"
+local Game = require "Game"
+local Text = require "components.Text"
+local Button = require "components.Button"
 
-local santa = Santa.new()
-local obstacles = {}
+local game = Game.new()
+local font = love.graphics.newFont(24)
 
-local game = {
-    difficulty = 10,
-    state = {
-        menu = true,
-        paused = false,
-        running = false,
-        ended = false
-    },
-    points = 0,
-    levels = {}
-}
+local windowWidth, windowHeight = 800, 600
+local buttonWidth, buttonHeight = 200, 50
+local buttonYStart = windowHeight / 2 - buttonHeight / 2
 
-local fonts = {
-    medium = {
-        font = love.graphics.newFont(16),
-        size = 16
-    },
-    large = {
-        font = love.graphics.newFont(24),
-        size = 24
-    },
-    massive = {
-        font = love.graphics.newFont(60),
-        size = 60
-    }
-}
+local startButton = Button.new("Start Game", (windowWidth - buttonWidth) / 2, buttonYStart, buttonWidth, buttonHeight, function()
+    game:startNewGame() -- Transition to the running state
+end)
 
-local function changeGameState(state)
-    game.state["menu"] = state == "menu"
-    game.state["paused"] = state == "paused"
-    game.state["running"] = state == "running"
-    game.state["ended"] = state == "ended"
-end
+local retryButton = Button.new("Retry", (windowWidth - buttonWidth) / 2, buttonYStart, buttonWidth, buttonHeight, function()
+    game:startNewGame() -- Restart the game
+end)
 
-local function startNewGame()
-    changeGameState("running")
-    obstacles = {}
-    santa = Santa.new()
-    santa:setSwapInterval(1)
+local quitButton = Button.new("Quit Game", (windowWidth - buttonWidth) / 2, buttonYStart + buttonHeight + 10, buttonWidth, buttonHeight, function()
+    love.event.quit()
+end)
 
-    for i = 1, game.difficulty do
-        table.insert(obstacles, Obstacle.new())
-    end
-
-    game.points = 0
-
-end
+local scoreText = Text.new("Score: 0", 10, 10, font, {0, 0, 1})
 
 function love.load()
     math.randomseed(os.time())
-    love.mouse.setVisible(false)
     love.graphics.setBackgroundColor(225 / 255, 245 / 255, 244 / 255)
 
     Santa.images = {
@@ -79,31 +51,54 @@ function love.load()
         love.graphics.newImage("Images/tree.png"),
         love.graphics.newImage("Images/snowman.png")
     }
-
-    startNewGame()
 end
 
 function love.update(dt)
-    santa:update(dt)
+    game:update(dt)
     if game.state["running"] then
-        santa:moveSanta(dt)
-        for _, obstacle in ipairs(obstacles) do
+        game.santa:moveSanta(dt)
+        for _, obstacle in ipairs(game.obstacles) do
             obstacle:update(dt)
         end
-        for i = 1, #obstacles do
-            if obstacles[i]:checkTouched(santa) then
-                santa:setState("dead")
-                changeGameState("ended")
+        for i = 1, #game.obstacles do
+            if game.obstacles[i]:checkTouched(game.santa) then
+                game.santa:setState("dead")
+                game:changeGameState("ended")
             end
         end
+        scoreText:setContent("Score: " .. math.floor(game.points))
     end
 end
 
 function love.draw()
-    if true then
-        santa:draw()
-        for _, obstacle in ipairs(obstacles) do
+    game.santa:draw()
+    if not game.state.menu then
+        for _, obstacle in ipairs(game.obstacles) do
             obstacle:draw()
+        end
+        scoreText:draw()
+    end
+
+    if game.state.menu then
+        startButton:draw()
+        quitButton:draw()
+    elseif game.state.ended then
+        retryButton:draw()
+        quitButton:draw()
+    elseif game.state.paused then
+        local pausedText = Text.new("PAUSED", love.graphics.getWidth() / 2 - 50, love.graphics.getHeight() / 2 - 20, font, {1, 0, 0})
+        pausedText:draw()
+    end
+end
+
+function love.mousepressed(x, y, button, istouch, presses)
+    if button == 1 then
+        if game.state.menu then
+            startButton:update(x, y, true)
+            quitButton:update(x, y, true)
+        elseif game.state.ended then
+            retryButton:update(x, y, true)
+            quitButton:update(x, y, true)
         end
     end
 end
